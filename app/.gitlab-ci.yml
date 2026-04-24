@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test_app:
+  stage: test
+  image: node:22
+
+  before_script:
+    - cd app
+    - npm install
+
+  script:
+    - npm test
