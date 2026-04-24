@@ -21,6 +21,11 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 - Observability (Prometheus, Grafana)
 - Secrets management
 - AI agent platform
+---
+## How to Run
+```bash
+See [Deployment Guide](docs/deployment.md)
+```
 
 ## Project Structure
 ```txt
