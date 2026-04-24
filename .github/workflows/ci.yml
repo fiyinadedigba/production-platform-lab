@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-        docker build -t ghcr.io/${{ github.repository }}/production-platform-api:latest .
+          docker build -t ghcr.io/${{ github.repository }}/production-platform-api:latest .
 
       - name: Run Docker container
         run: |
