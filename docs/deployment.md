@@ -102,6 +102,50 @@ curl http://localhost:8080/health
 ```
 
 ---
+## 8. GitOps with ArgoCD
+
+ArgoCD watches this repository and deploys the Helm chart automatically.
+
+Application manifest:
+
+```txt
+gitops/argocd-apps/production-platform-api.yaml
+
+### Flow:
+```txt
+GitHub → ArgoCD → Helm → Kubernetes
+```
+### Apply the ArgoCD application
+```bash
+kubectl apply -f gitops/argocd-apps/production-platform-api.yaml
+```
+### Check application status:
+```bash
+kubectl get applications -n argocd
+```
+### Access ArgoCD UI:
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8082:443
+```
+
+Open:
+```txt
+https://localhost:8082
+```
+
+Current deployed image:
+```txt
+ghcr.io/fiyinadedigba/production-platform-api:v1.0.1
+```
+---
+
+# Key Gitops benefits:
+
+- Git is the source of truth
+- ArgoCD automatically syncs desired state
+- Rollbacks can be done through Git
+- Kubernetes drift can be detected and corrected
+---
 
 # Key Features
 - Versioned deployments (no reliance on latest)
