@@ -49,12 +49,12 @@ jobs:
 
       - name: Run Docker container
         run: |
-          docker run -d -p 3000:3000 --name test-container production-platform-api
+          docker run -d -p 3001:3000 --name test-container production-platform-api
 
       - name: Wait for container readiness
         run: |
           for i in {1..10}; do
-            if curl -s http://localhost:3000/health > /dev/null; then
+            if curl -s http://localhost:3001/health > /dev/null; then
               echo "Container is ready"
               exit 0
             fi
@@ -66,4 +66,4 @@ jobs:
           exit 1
 
       - name: Test container endpoint
-        run: curl http://localhost:3000/health
+        run: curl http://localhost:3001/health
