@@ -9,7 +9,7 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 
 ## Next Steps
 
-- GitLab CI pipeline
+- Github Actions CI
 - Kubernetes deployment (Helm)
 - GitOps with ArgoCD
 - Terraform infrastructure (AWS)
