@@ -72,18 +72,18 @@ Refer to the full deployment guide:
 👉 docs/deployment.md
 ---
 
-⚙️ Design Decisions
-Helm
+## ⚙ ️ Design Decisions
+- Helm
 Used for templated and reusable Kubernetes deployments.
-ArgoCD
+- ArgoCD
 Enables GitOps-based continuous delivery and declarative infrastructure.
-GHCR (GitHub Container Registry)
+- GHCR (GitHub Container Registry)
 Integrated with GitHub Actions for seamless image publishing.
-Versioned Docker Images
+- Versioned Docker Images
 Ensures reproducibility, traceability, and safe rollbacks.
 ---
 
-📁 Project Structure
+## 📁 Project Structure
 production-platform-lab/
 ├── .github/workflows/        # CI pipelines
 ├── app/                      # Node.js API
@@ -98,20 +98,20 @@ production-platform-lab/
 └── README.md
 ---
 
-🎯 Goals
+## 🎯 Goals
 
 This project aims to demonstrate:
 
-End-to-end CI/CD pipelines
-GitOps-driven deployments
-Kubernetes best practices
-Scalable and production-ready infrastructure design
+- End-to-end CI/CD pipelines
+- GitOps-driven deployments
+- Kubernetes best practices
+- Scalable and production-ready infrastructure design
 
 ---
-📌 Future Improvements
-Full Infrastructure as Code (Terraform)
-Secure secrets handling
-Centralized logging and tracing
-Autoscaling and resilience testing
+## 📌 Future Improvements
+- Full Infrastructure as Code (Terraform)
+- Secure secrets handling
+- Centralized logging and tracing
+- Autoscaling and resilience testing
 
 ---
