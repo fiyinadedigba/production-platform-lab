@@ -84,6 +84,8 @@ Ensures reproducibility, traceability, and safe rollbacks.
 ---
 
 ## 📁 Project Structure
+
+```txt
 production-platform-lab/
 ├── .github/workflows/        # CI pipelines
 ├── app/                      # Node.js API
@@ -95,7 +97,8 @@ production-platform-lab/
 │   └── kubernetes/helm/
 │       └── production-platform-api/
 ├── scripts/                 # Utility scripts
-└── README.md
+└── README
+```
 ---
 
 ## 🎯 Goals
