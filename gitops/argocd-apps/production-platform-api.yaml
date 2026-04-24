@@ -15,7 +15,7 @@ spec:
       values: |
         image:
           repository: ghcr.io/fiyinadedigba/production-platform-api
-          tag: v1.0.3
+          tag: v1.0.4
 
   destination:
     server: https://kubernetes.default.svc
