@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
 
     defaults:
@@ -34,3 +34,6 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Build Docker image
+        run: docker build -t production-platform-api .
