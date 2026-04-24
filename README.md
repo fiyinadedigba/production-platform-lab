@@ -31,12 +31,10 @@ Developer pushes code
 - Observability (Prometheus, Grafana)
 - Secrets management
 - AI agent platform
----
+
 ## How to Run
-```bash
-See [Deployment Guide](docs/deployment.md)
-```
----
+```txt
+See [Deployment Guide](docs/deployment.md)`
 
 ```md
 ## Design Decisions
