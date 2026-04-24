@@ -1,6 +1,16 @@
 # Production Platform Lab
-
+![CI](https://github.com/.../actions/workflows/ci.yml/badge.svg)
 End-to-end platform engineering project covering CI/CD, cloud infrastructure, observability, security, and AI agent systems.
+## End-to-End Flow
+
+```txt
+Developer pushes code
+→ GitHub Actions builds & tests
+→ Docker image pushed to GHCR
+→ ArgoCD detects change
+→ Helm deploys to Kubernetes
+→ Application runs
+--- 
 
 ## Current Progress
 
@@ -26,6 +36,16 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 ```bash
 See [Deployment Guide](docs/deployment.md)
 ```
+---
+
+```md
+## Design Decisions
+
+- Helm chosen for templated Kubernetes deployments
+- ArgoCD used for GitOps-based continuous delivery
+- GHCR used as container registry integrated with GitHub Actions
+- Versioned images ensure reproducibility and rollback safety
+---
 
 ## Project Structure
 ```txt
@@ -33,7 +53,9 @@ production-platform-lab/
 ├── .github/workflows/
 ├── app/
 ├── docs/
-├── gitops/argocd-apps/
+├─gitops/
+  ├── apps/
+  └── environments/
 ├── infrastructure/kubernetes/helm/production-platform-api/
 ├── scripts/
 └── README.md
