@@ -5,7 +5,7 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 ## Current Progress
 
 ✅ Node.js API service  
-✅ Dockerized application  
+✅ Dockerized application
 ✅ GitHub Actions CI
 ✅ Docker image pushed to GHCR
 ✅ Kubernetes deployment with Helm
