@@ -64,8 +64,8 @@ Application runs
 cd app
 npm install
 npm run dev
-
-Deployment
+```
+### Deployment
 
 Refer to the full deployment guide:
 
