@@ -1,3 +1,6 @@
+permissions:
+  contents: read
+  packages: write
 name: CI
 
 on:
@@ -47,11 +50,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/production-platform-api:latest .
+          docker build -t ghcr.io/${{ github.repository_owner }}/production-platform-api:latest .
 
       - name: Run Docker container
         run: |
-          docker run -d -p 3001:3000 --name test-container ghcr.io/${{ github.repository }}/production-platform-api:latest
+          docker run -d -p 3001:3000 --name test-container ghcr.io/${{ github.repository_owner }}/production-platform-api:latest
         
       - name: Wait for container readiness
         run: |
@@ -71,4 +74,4 @@ jobs:
         run: curl http://localhost:3001/health
      
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}/production-platform-api:latest
+        run: docker push ghcr.io/${{ github.repository_owner }}/production-platform-api:latest
