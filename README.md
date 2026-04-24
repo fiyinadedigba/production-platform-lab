@@ -6,6 +6,11 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 
 ✅ Node.js API service  
 ✅ Dockerized application  
+✅ GitHub Actions CI
+✅ Docker image pushed to GHCR
+✅ Kubernetes deployment with Helm
+✅ GitOps with ArgoCD
+✅ Versioned image deployment
 
 ## Next Steps
 
@@ -18,4 +23,13 @@ End-to-end platform engineering project covering CI/CD, cloud infrastructure, ob
 - AI agent platform
 
 ## Project Structure
-├── app │   ├── package.json │   ├── README.md │   ├── src │   │   └── server.js │   └── tests ├── docs │   └── architecture.md └── README.md
+```txt
+production-platform-lab/
+├── .github/workflows/
+├── app/
+├── docs/
+├── gitops/argocd-apps/
+├── infrastructure/kubernetes/helm/production-platform-api/
+├── scripts/
+└── README.md
+```
