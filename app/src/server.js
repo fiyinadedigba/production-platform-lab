@@ -1,16 +1,11 @@
 const express = require("express");
 const client = require("prom-client");
-const OpenAI = require("openai");
-require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Default Prometheus metrics
 client.collectDefaultMetrics();
