@@ -1,4 +1,4 @@
-# Production Platform API with Observability & AI Insights 🚀
+# Production Platform API with Observability 🚀
 
 A production-style backend platform demonstrating end-to-end system design:
 
@@ -6,8 +6,9 @@ A production-style backend platform demonstrating end-to-end system design:
 - Containerization with Docker  
 - Kubernetes deployment using Helm  
 - GitOps with ArgoCD  
-- Observability with Prometheus & Grafana and AI-powered system insights
-
+- Automated image updates.
+- Observability with Prometheus & Grafana
+- AI-powered analysis endpoint for generating operational insights
 ---
 
 
@@ -20,6 +21,10 @@ GitHub Actions builds & tests
 ↓
 Docker image pushed to GHCR
 ↓
+ArgoCD Image Updater detects new image version 
+↓
+Git is updated automatically
+↓
 ArgoCD syncs desired state
 ↓
 Helm deploys to Kubernetes
@@ -27,6 +32,9 @@ Helm deploys to Kubernetes
 Prometheus scrapes metrics
 ↓
 Grafana visualizes system health
+↓
+`/analyze` endpoint provides insights
+
 ```
 
 ---
@@ -145,14 +153,21 @@ kubectl port-forward svc/argocd-server -n argocd 8082:443
 ---
 ## ✨ Key Features
 
-- End-to-end CI/CD pipeline (GitHub Actions)
-- Containerized application with Docker
-- Versioned images published to GHCR
+- Node.js API service
+- Dockerized application
+- CI pipeline with GitHub Actions
+- Container images published to GitHub Container Registry (GHCR)
 - Kubernetes deployment using Helm
 - GitOps-based delivery with ArgoCD
-- Real-time observability with Prometheus & Grafana
-- Health checks and metrics endpoints
+- Automated image updates using ArgoCD Image Updater
+- Observability with Prometheus and Grafana
 - AI-powered analysis endpoint for system insights
+
+## 🔁 Automated Image Updates
+
+The platform uses ArgoCD Image Updater to automatically detect new container image versions in GHCR and update deployments via GitOps.
+
+This removes the need for manual image tag changes and keeps deployments continuously in sync with the latest builds.
 
 ---
 ## 🤖 AI-Powered Analysis
