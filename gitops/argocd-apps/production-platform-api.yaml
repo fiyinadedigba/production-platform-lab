@@ -17,14 +17,14 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/fiyinadedigba/production-platform-lab.git
+    repoURL: https://github.com/fiyinadedigba/Production-Platform-API-with-Observability.git 
     targetRevision: main
     path: infrastructure/kubernetes/helm/production-platform-api
 
     helm:
       values: |
         image:
-          repository: ghcr.io/fiyinadedigba/production-platform-api
+          repository: ghcr.io/fiyinadedigba/production-platform-api 
           tag: v1.0.6
 
   destination:

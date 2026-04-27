@@ -20,5 +20,5 @@ spec:
   writeBackConfig:
     method: "git"
     gitConfig:
-      repository: "https://github.com/fiyinadedigba/production-platform-lab.git"
+      repository: "https://github.com/fiyinadedigba/Production-Platform-API-with-Observability.git"
       branch: "main"
