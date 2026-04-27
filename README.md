@@ -1,86 +1,173 @@
 # Production Platform Lab 🚀
 
-A production-grade platform showcasing modern DevOps practices, including CI/CD, containerization, Kubernetes orchestration, and GitOps workflows.
+A production-style backend platform demonstrating end-to-end system design:
+
+- CI/CD with GitHub Actions  
+- Containerization with Docker  
+- Kubernetes deployment using Helm  
+- GitOps with ArgoCD  
+- Observability with Prometheus & Grafana 
 
 ---
 
-## 🧱 Architecture Overview
 
+## 🧭 End-to-End Flow
+
+``` txt
 Developer pushes code
 ↓
 GitHub Actions builds & tests
 ↓
 Docker image pushed to GHCR
 ↓
-ArgoCD detects change
+ArgoCD syncs desired state
 ↓
 Helm deploys to Kubernetes
 ↓
-Application runs 
-
-
----
-
-## ✅ Current Capabilities
-
-- Node.js API service  
-- Dockerized application  
-- CI pipeline with GitHub Actions  
-- Container images published to GitHub Container Registry (GHCR)  
-- Kubernetes deployment using Helm  
-- GitOps-based delivery with ArgoCD  
-- Versioned image deployments for rollback and reproducibility  
+Prometheus scrapes metrics
+↓
+Grafana visualizes system health
+```
 
 ---
 
-## 🚧 Roadmap
+```md
+## 🏗️ Architecture
 
-### Infrastructure
-- Provision cloud infrastructure using Terraform (AWS)  
-- Set up EKS cluster and networking (VPC, subnets, IAM)  
+![Architecture](docs/architecture.png)
 
-### Platform Enhancements
-- Implement secrets management (e.g., Vault, AWS Secrets Manager)  
-- Add observability stack (Prometheus, Grafana, logging)  
+```
+---
+## 🚀 CI/CD Pipeline
 
-### Advanced Features
-- Introduce AI agent platform integration  
-- Improve scalability and autoscaling strategies  
+![GitHub Actions](docs/images/ci-pipeline.png)
+
+Automated pipeline builds, tests, and publishes versioned Docker images.
 
 ---
 
-## ▶️ Getting Started
+## 📦 Container Registry (GHCR)
+
+![GHCR Images](docs/images/ghcr-images.png)
+
+Images are versioned (`v1.x.x`) for reproducible deployments.
+
+---
+## 🔁 GitOps Deployment (ArgoCD)
+
+![ArgoCD](docs/images/argocd-synced.png)
+
+ArgoCD continuously syncs the desired state from Git to Kubernetes.
+
+---
+
+## ☸️ Kubernetes Runtime
+
+![Kubernetes](docs/images/kubernetes-pods.png)
+
+Application is deployed as a Kubernetes Deployment with a Service for networking.
+
+---
+
+## 📊 Observability
+
+![Grafana](docs/images/grafana-dashboard.png)
+
+Metrics are collected and visualized in real time:
+
+- Request volume  
+- Error rates (status codes)  
+- Latency (p95)  
+
+![Prometheus](docs/images/prometheus-targets.png)
+
+
+---
+## 🛠️ Tech Stack
+
+- Node.js (Express)
+- Docker
+- Kubernetes (kind)
+- Helm
+- ArgoCD
+- Prometheus
+- Grafana
+- GitHub Actions
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Docker  
-- Kubernetes cluster (local or cloud)  
-- Helm  
-- ArgoCD (installed in cluster)  
+- Docker
+- Kubernetes (kind)
+- Helm
+- kubectl
+- Node.js
 
-### Run Locally
+### Run Locally (development)
 
 ```bash
 cd app
 npm install
 npm run dev
 ```
-### Deployment
+### Build and run with Docker
+```bash
+docker build -t production-platform-api .
+docker run -p 3000:3000 production-platform-api
 
-Refer to the full deployment guide:
+```
+### Deploy to Kubernetes
+```bash
+kubectl apply -f gitops/argocd-apps/production-platform-api.yaml
+```
 
-👉 docs/deployment.md
+### Access services
+- **API**
+
+```bash
+kubectl port-forward svc/production-platform-api 8080:80
+```
+
+- **Grafana**
+
+```bash
+kubectl port-forward svc/monitoring-grafana -n monitoring 3001:80
+```
+
+- **ArgoCD**
+
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8082:443
+```
+---
+## ✨ Key Features
+
+- End-to-end CI/CD pipeline (GitHub Actions)
+- Containerized application with Docker
+- Versioned images published to GHCR
+- Kubernetes deployment using Helm
+- GitOps-based delivery with ArgoCD
+- Real-time observability with Prometheus & Grafana
+- Health checks and metrics endpoints
 ---
 
-## ⚙ ️ Design Decisions
-- Helm
-Used for templated and reusable Kubernetes deployments.
-- ArgoCD
-Enables GitOps-based continuous delivery and declarative infrastructure.
-- GHCR (GitHub Container Registry)
-Integrated with GitHub Actions for seamless image publishing.
-- Versioned Docker Images
-Ensures reproducibility, traceability, and safe rollbacks.
+## ⚙️ Design Decisions
+
+- **Helm**  
+  Used for templated and reusable Kubernetes deployments.
+
+- **ArgoCD**  
+  Enables GitOps-based continuous delivery with Git as the source of truth.
+
+- **GHCR (GitHub Container Registry)**  
+  Integrated with GitHub Actions for seamless image publishing.
+
+- **Versioned Docker Images**  
+  Ensures reproducibility, traceability, and safe rollbacks.
+
 ---
 
 ## 📁 Project Structure
@@ -99,22 +186,3 @@ production-platform-lab/
 ├── scripts/                 # Utility scripts
 └── README
 ```
----
-
-## 🎯 Goals
-
-This project aims to demonstrate:
-
-- End-to-end CI/CD pipelines
-- GitOps-driven deployments
-- Kubernetes best practices
-- Scalable and production-ready infrastructure design
-
----
-## 📌 Future Improvements
-- Full Infrastructure as Code (Terraform)
-- Secure secrets handling
-- Centralized logging and tracing
-- Autoscaling and resilience testing
-
----
