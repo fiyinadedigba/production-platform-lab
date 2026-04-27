@@ -162,6 +162,7 @@ kubectl port-forward svc/argocd-server -n argocd 8082:443
 - Automated image updates using ArgoCD Image Updater
 - Observability with Prometheus and Grafana
 - AI-powered analysis endpoint for system insights
+---
 
 ## 🔁 Automated Image Updates
 
@@ -191,6 +192,13 @@ curl -X POST http://localhost:8080/analyze \
 >> Note: The AI response is mocked locally for development but designed to integrate with LLM providers.
 
 ---
+## 📊 Observability
+
+- Prometheus scrapes application metrics
+- Grafana visualizes system performance
+- Custom metrics include request latency and status codes
+
+---
 
 ## ⚙️ Design Decisions
 
@@ -207,20 +215,31 @@ curl -X POST http://localhost:8080/analyze \
   Ensures reproducibility, traceability, and safe rollbacks.
 
 ---
+## 🧱 GitOps Bootstrap (App of Apps)
+
+The repository includes a basic App-of-Apps setup demonstrating how ArgoCD can manage both infrastructure and application deployments from Git.
+
+A root application (root-app) references child applications, including:
+
+- ArgoCD itself (via Helm)
+- The API service
+
+This pattern is commonly used to bootstrap and manage environments declaratively.
+
+---
 
 ## 📁 Project Structure
 
-```txt
 production-platform-lab/
-├── .github/workflows/        # CI pipelines
-├── app/                      # Node.js API
-├── docs/                     # Documentation
-├── gitops/                   # ArgoCD applications & environments
-│   ├── apps/
-│   └── environments/
+├── .github/workflows/             # CI pipelines (build & push images)
+├── app/                           # Node.js API service
+├── docs/                          # Documentation & screenshots
+├── gitops/                        # GitOps configuration (ArgoCD)
+│   ├── apps/                      # ArgoCD applicatioAPI + platform components)
+│   ├── bootstrap/               App-of-apps root configurationern)
+│   └── image-updater/           Automated image update configurationfig
 ├── infrastructure/
 │   └── kubernetes/helm/
-│       └── production-platform-api/
-├── scripts/                 # Utility scripts
-└── README
-```
+│       └── production-platform-api/   # Helm chart for API deployment
+├── scripts/                       # Utility scripts
+└── README.md
