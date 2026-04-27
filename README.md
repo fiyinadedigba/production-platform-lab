@@ -1,4 +1,4 @@
-# Production Platform Lab 🚀
+# Production Platform API with Observability & AI Insights 🚀
 
 A production-style backend platform demonstrating end-to-end system design:
 
@@ -6,7 +6,7 @@ A production-style backend platform demonstrating end-to-end system design:
 - Containerization with Docker  
 - Kubernetes deployment using Helm  
 - GitOps with ArgoCD  
-- Observability with Prometheus & Grafana 
+- Observability with Prometheus & Grafana and AI-powered system insights
 
 ---
 
@@ -71,7 +71,7 @@ Application is deployed as a Kubernetes Deployment with a Service for networking
 
 ## 📊 Observability
 
-![Grafana](docs/images/grafana-dashboard.png)
+![Prometheus](docs/images/prometheus-targets.png)
 
 Metrics are collected and visualized in real time:
 
@@ -79,8 +79,7 @@ Metrics are collected and visualized in real time:
 - Error rates (status codes)  
 - Latency (p95)  
 
-![Prometheus](docs/images/prometheus-targets.png)
-
+![Grafana](docs/images/grafana-dashboard.png)
 
 ---
 ## 🛠️ Tech Stack
@@ -93,6 +92,7 @@ Metrics are collected and visualized in real time:
 - Prometheus
 - Grafana
 - GitHub Actions
+- AI Integration (LLM-based analysis endpoint)
 
 ---
 
@@ -152,6 +152,29 @@ kubectl port-forward svc/argocd-server -n argocd 8082:443
 - GitOps-based delivery with ArgoCD
 - Real-time observability with Prometheus & Grafana
 - Health checks and metrics endpoints
+- AI-powered analysis endpoint for system insights
+
+---
+## 🤖 AI-Powered Analysis
+
+The API includes an `/analyze` endpoint that provides operational insights based on input text (e.g., logs or metric summaries).
+
+Example:
+
+```bash
+curl -X POST http://localhost:8080/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Error rate increased and latency spiked"}'
+```
+
+**Response**
+```JSON
+{
+  "analysis": "Elevated error rate detected. Investigate failing endpoints. Latency increase observed. Possible performance bottleneck."
+}
+```
+>> Note: The AI response is mocked locally for development but designed to integrate with LLM providers.
+
 ---
 
 ## ⚙️ Design Decisions
