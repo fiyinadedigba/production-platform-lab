@@ -229,6 +229,7 @@ This pattern is commonly used to bootstrap and manage environments declaratively
 ---
 
 ## 📁 Project Structure
+```txt
 
 production-platform-lab/
 ├── .github/workflows/             # CI pipelines (build & push images)
@@ -243,3 +244,4 @@ production-platform-lab/
 │       └── production-platform-api/   # Helm chart for API deployment
 ├── scripts/                       # Utility scripts
 └── README.md
+```
