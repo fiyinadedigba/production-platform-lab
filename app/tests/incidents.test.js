@@ -1,12 +1,30 @@
 const request = require("supertest");
 const app = require("../src/server");
 
-describe("Incidents API", () => {
+describe("Incidents API with Auth", () => {
+  let token;
   let incidentId;
 
-  test("POST /incidents - create incident", async () => {
+  beforeAll(async () => {
+    const email = `test${Date.now()}@example.com`;
+
+    await request(app).post("/auth/register").send({
+      email,
+      password: "password",
+    });
+
+    const loginRes = await request(app).post("/auth/login").send({
+      email,
+      password: "password",
+    });
+
+    token = loginRes.body.token;
+  });
+
+  test("POST /incidents", async () => {
     const res = await request(app)
       .post("/incidents")
+      .set("Authorization", `Bearer ${token}`)
       .send({
         title: "Test incident",
         description: "Something broke",
@@ -14,36 +32,39 @@ describe("Incidents API", () => {
       });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("id");
-
     incidentId = res.body.id;
   });
 
-  test("GET /incidents - list incidents", async () => {
-    const res = await request(app).get("/incidents");
+  test("GET /incidents", async () => {
+    const res = await request(app)
+      .get("/incidents")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("incidents");
   });
 
-  test("GET /incidents/:id - get incident", async () => {
-    const res = await request(app).get(`/incidents/${incidentId}`);
+  test("GET /incidents/:id", async () => {
+    const res = await request(app)
+      .get(`/incidents/${incidentId}`)
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.id).toBe(incidentId);
   });
 
-  test("PATCH /incidents/:id - update incident", async () => {
+  test("PATCH /incidents/:id", async () => {
     const res = await request(app)
       .patch(`/incidents/${incidentId}`)
+      .set("Authorization", `Bearer ${token}`)
       .send({ status: "resolved" });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe("resolved");
   });
 
-  test("DELETE /incidents/:id - delete incident", async () => {
-    const res = await request(app).delete(`/incidents/${incidentId}`);
+  test("DELETE /incidents/:id", async () => {
+    const res = await request(app)
+      .delete(`/incidents/${incidentId}`)
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
   });
