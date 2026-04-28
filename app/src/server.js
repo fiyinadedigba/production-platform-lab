@@ -30,6 +30,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
+
 app.use(limiter);
 
 // ======================
@@ -88,6 +89,19 @@ const httpRequestDuration = new client.Histogram({
   help: "HTTP request duration in seconds",
   labelNames: ["method", "route", "status_code"],
   buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5],
+});
+
+const aiAnalysisCounter = new client.Counter({
+  name: "ai_analysis_total",
+  help: "Total number of AI incident analyses",
+  labelNames: ["severity", "status"],
+});
+
+const aiAnalysisDuration = new client.Histogram({
+  name: "ai_analysis_duration_seconds",
+  help: "Duration of AI analysis requests",
+  labelNames: ["severity"],
+  buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2],
 });
 
 app.use((req, res, next) => {
@@ -162,6 +176,12 @@ app.post("/auth/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "email and password are required",
+      });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -180,11 +200,10 @@ app.post("/auth/login", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-
-  });
+});
 
 // ======================
-// AI Analyze Endpoint
+// General AI Analyze Endpoint
 // ======================
 app.post("/analyze", async (req, res, next) => {
   try {
@@ -292,21 +311,85 @@ app.patch(
       });
 
       res.json(incident);
-    } catch (error) {
+    } catch {
       res.status(404).json({ error: "Incident not found" });
     }
   }
 );
 
-app.delete("/incidents/:id", authMiddleware, async (req, res, next) => {
+app.delete("/incidents/:id", authMiddleware, async (req, res) => {
   try {
     const deleted = await prisma.incident.delete({
       where: { id: req.params.id },
     });
 
     res.json({ deleted });
-  } catch (error) {
+  } catch {
     res.status(404).json({ error: "Incident not found" });
+  }
+});
+
+// ======================
+// Incident AI Analysis
+// ======================
+app.post("/incidents/:id/analyze", authMiddleware, async (req, res, next) => {
+  const end = aiAnalysisDuration.startTimer();
+
+  try {
+    const incident = await prisma.incident.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!incident) {
+      return res.status(404).json({ error: "Incident not found" });
+    }
+
+    let analysis = "Incident appears stable.";
+    let recommendation = "Continue monitoring.";
+
+    const description = incident.description.toLowerCase();
+
+    if (incident.severity === "high") {
+      analysis =
+        "High severity incident detected. This may impact service reliability.";
+      recommendation =
+        "Prioritize investigation. Check recent deployments, logs, latency, and error dashboards.";
+    }
+
+    if (description.includes("latency")) {
+      analysis += " Latency symptoms are present.";
+      recommendation += " Review p95 latency and downstream dependency performance.";
+    }
+
+    if (description.includes("error")) {
+      analysis += " Error symptoms are present.";
+      recommendation += " Check 5xx rates and recent application errors.";
+    }
+
+    const updated = await prisma.incident.update({
+      where: { id: incident.id },
+      data: {
+        analysis,
+        recommendation,
+        analyzedAt: new Date(),
+      },
+    });
+
+    aiAnalysisCounter.inc({
+      severity: incident.severity,
+      status: incident.status,
+    });
+
+    end({ severity: incident.severity });
+
+    res.json({
+      incidentId: updated.id,
+      analysis: updated.analysis,
+      recommendation: updated.recommendation,
+      analyzedAt: updated.analyzedAt,
+    });
+  } catch (error) {
+    next(error);
   }
 });
 

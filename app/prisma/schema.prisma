@@ -13,13 +13,16 @@ datasource db {
 }
 
 model Incident {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  severity    String
-  status      String   @default("open")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  severity       String
+  status         String   @default("open")
+  analysis       String?
+  recommendation String?
+  analyzedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model User {

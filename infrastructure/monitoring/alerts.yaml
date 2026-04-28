@@ -1,0 +1,21 @@
+groups:
+  - name: api-alerts
+    rules:
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status_code=~"5.."}[1m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "More than 5% of requests are failing"
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[1m])) > 0.3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is above 300ms"
