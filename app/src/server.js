@@ -3,6 +3,7 @@ const client = require("prom-client");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const incidents = [];
 
 app.use(express.json());
 
@@ -97,6 +98,90 @@ app.post("/analyze", async (req, res) => {
   res.json({ analysis });
 });
 
+// Create incident
+app.post("/incidents", (req, res) => {
+  const { title, description, severity } = req.body;
+
+  if (!title || !description || !severity) {
+    return res.status(400).json({
+      error: "title, description, and severity are required",
+    });
+  }
+
+  const incident = {
+    id: String(Date.now()),
+    title,
+    description,
+    severity,
+    status: "open",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  incidents.push(incident);
+
+  res.status(201).json(incident);
+});
+
+// List incidents
+app.get("/incidents", (req, res) => {
+  res.json({
+    count: incidents.length,
+    incidents,
+  });
+});
+
+// Get incident by ID
+app.get("/incidents/:id", (req, res) => {
+  const incident = incidents.find((item) => item.id === req.params.id);
+
+  if (!incident) {
+    return res.status(404).json({
+      error: "Incident not found",
+    });
+  }
+
+  res.json(incident);
+});
+
+// Update incident
+app.patch("/incidents/:id", (req, res) => {
+  const incident = incidents.find((item) => item.id === req.params.id);
+
+  if (!incident) {
+    return res.status(404).json({
+      error: "Incident not found",
+    });
+  }
+
+  const { title, description, severity, status } = req.body;
+
+  if (title) incident.title = title;
+  if (description) incident.description = description;
+  if (severity) incident.severity = severity;
+  if (status) incident.status = status;
+
+  incident.updatedAt = new Date().toISOString();
+
+  res.json(incident);
+});
+
+// Delete incident
+app.delete("/incidents/:id", (req, res) => {
+  const index = incidents.findIndex((item) => item.id === req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      error: "Incident not found",
+    });
+  }
+
+  const deleted = incidents.splice(index, 1);
+
+  res.json({
+    deleted: deleted[0],
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
