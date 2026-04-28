@@ -1,51 +1,37 @@
 const express = require("express");
 const client = require("prom-client");
+const { PrismaClient } = require("@prisma/client");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const incidents = [];
+
+const prisma = new PrismaClient();
 
 app.use(express.json());
 
+// ======================
+// Prometheus Metrics
+// ======================
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
 
-// Default Prometheus metrics
-client.collectDefaultMetrics();
-
-// Request counter
-const httpRequestCounter = new client.Counter({
-  name: "http_requests_total",
-  help: "Total number of HTTP requests",
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: "http_request_duration_ms",
+  help: "Duration of HTTP requests in ms",
   labelNames: ["method", "route", "status_code"],
+  buckets: [50, 100, 200, 300, 500, 1000],
 });
 
-// Request latency histogram
-const httpRequestDuration = new client.Histogram({
-  name: "http_request_duration_seconds",
-  help: "HTTP request duration in seconds",
-  labelNames: ["method", "route", "status_code"],
-  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5],
-});
+register.registerMetric(httpRequestDurationMicroseconds);
 
-// Metrics middleware
+// Middleware to measure request duration
 app.use((req, res, next) => {
-  res.on("finish", () => {
-    httpRequestCounter.inc({
-      method: req.method,
-      route: req.path,
-      status_code: res.statusCode,
-    });
-  });
-
-  next();
-});
-
-app.use((req, res, next) => {
-  const end = httpRequestDuration.startTimer();
+  const end = httpRequestDurationMicroseconds.startTimer();
 
   res.on("finish", () => {
     end({
+      route: req.route?.path || req.path,
       method: req.method,
-      route: req.path,
       status_code: res.statusCode,
     });
   });
@@ -53,29 +39,25 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health endpoint
+// ======================
+// Health / Info
+// ======================
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
+  res.json({ status: "ok" });
 });
 
-// Version endpoint
 app.get("/version", (req, res) => {
-  res.json({
-    version: "1.0.0",
-  });
+  res.json({ version: "1.0.0" });
 });
 
-// Prometheus metrics endpoint
 app.get("/metrics", async (req, res) => {
-  res.set("Content-Type", client.register.contentType);
-  res.end(await client.register.metrics());
+  res.set("Content-Type", register.contentType);
+  res.end(await register.metrics());
 });
 
-// AI analysis endpoint (mocked)
+// ======================
+// AI Analyze Endpoint
+// ======================
 app.post("/analyze", async (req, res) => {
   const { text } = req.body;
 
@@ -85,107 +67,115 @@ app.post("/analyze", async (req, res) => {
     });
   }
 
-  let analysis = "System appears stable.";
-
-  if (text.toLowerCase().includes("error")) {
-    analysis = "Elevated error rate detected. Investigate failing endpoints.";
-  }
-
-  if (text.toLowerCase().includes("latency")) {
-    analysis += " Latency increase observed. Possible performance bottleneck.";
-  }
-
-  res.json({ analysis });
+  // Mock AI response
+  res.json({
+    analysis:
+      "Elevated error rate detected. Investigate failing endpoints. Latency increase observed. Possible performance bottleneck.",
+  });
 });
 
+// ======================
+// Incident API
+// ======================
+
 // Create incident
-app.post("/incidents", (req, res) => {
-  const { title, description, severity } = req.body;
+app.post("/incidents", async (req, res) => {
+  try {
+    const { title, description, severity } = req.body;
 
-  if (!title || !description || !severity) {
-    return res.status(400).json({
-      error: "title, description, and severity are required",
+    if (!title || !description || !severity) {
+      return res.status(400).json({
+        error: "title, description, and severity are required",
+      });
+    }
+
+    const incident = await prisma.incident.create({
+      data: {
+        title,
+        description,
+        severity,
+      },
     });
+
+    res.status(201).json(incident);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to create incident" });
   }
-
-  const incident = {
-    id: String(Date.now()),
-    title,
-    description,
-    severity,
-    status: "open",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  incidents.push(incident);
-
-  res.status(201).json(incident);
 });
 
 // List incidents
-app.get("/incidents", (req, res) => {
-  res.json({
-    count: incidents.length,
-    incidents,
-  });
+app.get("/incidents", async (req, res) => {
+  try {
+    const incidents = await prisma.incident.findMany();
+
+    res.json({
+      count: incidents.length,
+      incidents,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch incidents" });
+  }
 });
 
 // Get incident by ID
-app.get("/incidents/:id", (req, res) => {
-  const incident = incidents.find((item) => item.id === req.params.id);
-
-  if (!incident) {
-    return res.status(404).json({
-      error: "Incident not found",
+app.get("/incidents/:id", async (req, res) => {
+  try {
+    const incident = await prisma.incident.findUnique({
+      where: { id: req.params.id },
     });
-  }
 
-  res.json(incident);
+    if (!incident) {
+      return res.status(404).json({
+        error: "Incident not found",
+      });
+    }
+
+    res.json(incident);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch incident" });
+  }
 });
 
 // Update incident
-app.patch("/incidents/:id", (req, res) => {
-  const incident = incidents.find((item) => item.id === req.params.id);
+app.patch("/incidents/:id", async (req, res) => {
+  try {
+    const incident = await prisma.incident.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
 
-  if (!incident) {
+    res.json(incident);
+  } catch (error) {
     return res.status(404).json({
       error: "Incident not found",
     });
   }
-
-  const { title, description, severity, status } = req.body;
-
-  if (title) incident.title = title;
-  if (description) incident.description = description;
-  if (severity) incident.severity = severity;
-  if (status) incident.status = status;
-
-  incident.updatedAt = new Date().toISOString();
-
-  res.json(incident);
 });
 
 // Delete incident
-app.delete("/incidents/:id", (req, res) => {
-  const index = incidents.findIndex((item) => item.id === req.params.id);
+app.delete("/incidents/:id", async (req, res) => {
+  try {
+    const deleted = await prisma.incident.delete({
+      where: { id: req.params.id },
+    });
 
-  if (index === -1) {
-    return res.status(404).json({
+    res.json({ deleted });
+  } catch (error) {
+    res.status(404).json({
       error: "Incident not found",
     });
   }
-
-  const deleted = incidents.splice(index, 1);
-
-  res.json({
-    deleted: deleted[0],
-  });
 });
 
-   if (require.main === module) {
-     app.listen(PORT, () => {
-       console.log(`Server running on port ${PORT}`);
+// ======================
+// Start server (test-safe)
+// ======================
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
