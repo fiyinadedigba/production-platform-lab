@@ -1,9 +1,8 @@
 # Production Platform API with Observability 🚀
 
-## Overview
-
-This project demonstrates how to design, deploy, and operate a production-grade backend service using modern DevOps, cloud-native, and SRE practices.
+A production-style backend service demonstrating modern DevOps, cloud-native, and SRE practices — including automated deployment, observability, alerting, and AI-assisted incident analysis.
  
+---
 
 ## ⚙️ Features
 
