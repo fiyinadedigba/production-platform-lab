@@ -113,7 +113,8 @@ Application is deployed as a Kubernetes Deployment with a Service for networking
 **Example query:
 ```txt
 sum(ai_analysis_total) by (severity
-```)
+)
+```
 ---
 
 ### Grafana dashboard
