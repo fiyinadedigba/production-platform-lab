@@ -4,5 +4,5 @@ helm:
     value: ghcr.io/fiyinadedigba/production-platform-api
     forcestring: true
   - name: image.tag
-    value: v1.0.10
+    value: v1.0.11
     forcestring: true
